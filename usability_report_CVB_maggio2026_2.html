@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Usability Report — Centro Vela Bracciano</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #1a1a18;
+    --ink-mid: #4a4a45;
+    --ink-light: #8a8a82;
+    --rule: #e0ddd5;
+    --page: #faf9f6;
+    --surface: #f3f1ec;
+    --red-bg: #fdf0ee; --red-text: #7a2018; --red-rule: #e8b5ac;
+    --amber-bg: #fdf5e6; --amber-text: #7a4a08; --amber-rule: #e8c97a;
+    --green-bg: #eef5ec; --green-text: #1a5c28; --green-rule: #9ecbaa;
+    --accent: #1d4e89;
+  }
+
+  html { font-size: 16px; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    background: var(--page);
+    color: var(--ink);
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* ── toolbar ── */
+  #toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(250,249,246,0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--rule);
+    padding: 10px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .toolbar-left { display: flex; align-items: center; gap: 10px; }
+  .edit-indicator {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; color: var(--ink-light); font-weight: 400;
+  }
+  .edit-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #5bb974; flex-shrink: 0;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.45} }
+  .toolbar-actions { display: flex; gap: 8px; }
+  .btn {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px; font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--rule);
+    cursor: pointer;
+    background: white;
+    color: var(--ink-mid);
+    transition: all 0.15s;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .btn:hover { background: var(--surface); border-color: #c8c5bc; }
+  .btn-primary { background: var(--ink); color: white; border-color: var(--ink); }
+  .btn-primary:hover { background: #2e2e2a; }
+
+  /* ── layout ── */
+  .page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 64px 48px 96px;
+  }
+
+  /* ── header ── */
+  .report-header { margin-bottom: 48px; }
+  .eyebrow {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--ink-light);
+    margin-bottom: 12px;
+  }
+  h1 {
+    font-family: 'Inter', sans-serif;
+    font-size: 42px; font-weight: 600; line-height: 1.15;
+    color: var(--ink); margin-bottom: 16px;
+  }
+  .meta {
+    display: flex; flex-wrap: wrap; gap: 20px;
+    font-size: 13px; color: var(--ink-light);
+    padding-top: 16px;
+    border-top: 1px solid var(--rule);
+  }
+  .meta-item strong { color: var(--ink-mid); font-weight: 500; }
+
+  /* ── summary bar ── */
+  .summary-bar {
+    display: grid; grid-template-columns: repeat(4,1fr);
+    gap: 12px; margin-bottom: 48px;
+  }
+  .summary-cell {
+    background: var(--surface);
+    border-radius: 10px;
+    padding: 18px 16px;
+    text-align: center;
+  }
+  .summary-num {
+    font-family: 'Inter', sans-serif;
+    font-size: 36px; line-height: 1; font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .summary-cell.critico .summary-num { color: #c0392b; }
+  .summary-cell.maggiore .summary-num { color: #c07b00; }
+  .summary-cell.minore .summary-num { color: #2d7a45; }
+  .summary-cell.totale .summary-num { color: var(--ink); }
+  .summary-label { font-size: 11px; color: var(--ink-light); font-weight: 400; }
+
+  /* ── prose ── */
+  .section { margin-bottom: 52px; }
+  .section-label {
+    font-size: 10px; font-weight: 500; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--ink-light);
+    margin-bottom: 20px; padding-bottom: 8px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .executive p {
+    font-size: 16px; line-height: 1.8; color: var(--ink-mid);
+  }
+  .executive p + p { margin-top: 14px; }
+
+  /* ── finding cards ── */
+  .finding {
+    border-radius: 10px;
+    border: 1px solid var(--rule);
+    background: white;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+  .finding:hover { box-shadow: 0 2px 16px rgba(0,0,0,0.06); }
+  .finding-top { padding: 20px 24px 0; }
+  .finding-body { padding: 0 24px 20px; }
+  .finding-head {
+    display: flex; align-items: flex-start;
+    gap: 10px; margin-bottom: 6px;
+  }
+  .badge {
+    flex-shrink: 0;
+    font-size: 10px; font-weight: 500; letter-spacing: 0.06em;
+    text-transform: uppercase; padding: 3px 9px;
+    border-radius: 4px; margin-top: 2px;
+  }
+  .badge.critico { background: var(--red-bg); color: var(--red-text); border: 1px solid var(--red-rule); }
+  .badge.maggiore { background: var(--amber-bg); color: var(--amber-text); border: 1px solid var(--amber-rule); }
+  .badge.minore { background: var(--green-bg); color: var(--green-text); border: 1px solid var(--green-rule); }
+  .finding-title {
+    font-size: 16px; font-weight: 500; line-height: 1.35;
+    color: var(--ink);
+  }
+  .finding-section-tag {
+    font-size: 11px; color: var(--ink-light);
+    margin-bottom: 10px; padding-left: 0;
+  }
+  .finding-desc {
+    font-size: 14px; color: var(--ink-mid); line-height: 1.7;
+    margin-bottom: 12px;
+  }
+  .rec-box {
+    background: #eef3fa;
+    border-left: 3px solid #4a7fcb;
+    border-radius: 0 6px 6px 0;
+    padding: 10px 14px;
+    font-size: 13px; color: #1d3d6e; line-height: 1.6;
+    margin-bottom: 12px;
+  }
+  .rec-box::before {
+    content: "Raccomandazione — ";
+    font-weight: 500;
+  }
+  blockquote {
+    border-left: 2px solid var(--rule);
+    padding-left: 12px;
+    font-size: 13px; color: var(--ink-light);
+    font-style: italic; line-height: 1.6;
+    margin-bottom: 12px;
+  }
+  .users {
+    display: flex; flex-wrap: wrap; gap: 5px;
+  }
+  .user-tag {
+    font-size: 11px; color: var(--ink-light);
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    padding: 2px 8px; border-radius: 20px;
+  }
+
+  /* ── section divider heading ── */
+  .priority-heading {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 16px; margin-top: 4px;
+  }
+  .priority-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .priority-dot.critico { background: #c0392b; }
+  .priority-dot.maggiore { background: #c07b00; }
+  .priority-dot.minore { background: #2d7a45; }
+  .priority-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 22px; font-weight: 600; color: var(--ink);
+  }
+
+  /* ── contenteditable ── */
+  [contenteditable] { outline: none; }
+  [contenteditable]:hover { background: rgba(0,0,0,0.02); border-radius: 3px; }
+  [contenteditable]:focus {
+    background: rgba(255,253,240,0.9);
+    border-radius: 3px;
+    box-shadow: 0 0 0 2px #f0c040;
+  }
+
+  /* ── print ── */
+  @media print {
+    #toolbar { display: none; }
+    .page { padding: 32px; }
+    .finding { break-inside: avoid; }
+    body { background: white; }
+  }
+
+  @media (max-width: 640px) {
+    .page { padding: 32px 20px 64px; }
+    #toolbar { padding: 10px 20px; }
+    h1 { font-size: 28px; }
+    .summary-bar { grid-template-columns: repeat(2,1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div id="toolbar">
+  <div class="toolbar-left">
+    <div class="edit-indicator">
+      <div class="edit-dot"></div>
+      Clicca su qualsiasi testo per modificarlo
+    </div>
+  </div>
+  <div class="toolbar-actions">
+    <button class="btn" onclick="window.print()">⬇ Salva PDF</button>
+    <button class="btn" onclick="copyLink()">🔗 Copia link file</button>
+    <button class="btn btn-primary" onclick="saveHTML()">💾 Salva modifiche</button>
+  </div>
+</div>
+
+<div class="page">
+
+  <header class="report-header">
+    <div class="eyebrow" contenteditable="true">Ricerca UX · Usability Testing</div>
+    <h1 contenteditable="true">Usability Report<br>Centro Vela Bracciano</h1>
+    <div class="meta">
+      <span class="meta-item"><strong>Data sessioni:</strong> <span contenteditable="true">7–8 maggio 2026</span></span>
+      <span class="meta-item"><strong>Utenti testati:</strong> <span contenteditable="true">4 (Luca, Franca, Valentina, Juri)</span></span>
+      <span class="meta-item"><strong>Moderatore:</strong> <span contenteditable="true">Gabriele Amato</span></span>
+      <span class="meta-item"><strong>Stato:</strong> <span contenteditable="true">Bozza per revisione</span></span>
+    </div>
+  </header>
+
+  <!-- Summary bar -->
+  <div class="summary-bar">
+    <div class="summary-cell critico">
+      <div class="summary-num" contenteditable="true">3</div>
+      <div class="summary-label">Problemi critici</div>
+    </div>
+    <div class="summary-cell maggiore">
+      <div class="summary-num" contenteditable="true">4</div>
+      <div class="summary-label">Problemi maggiori</div>
+    </div>
+    <div class="summary-cell minore">
+      <div class="summary-num" contenteditable="true">4</div>
+      <div class="summary-label">Problemi minori</div>
+    </div>
+    <div class="summary-cell totale">
+      <div class="summary-num" contenteditable="true">11</div>
+      <div class="summary-label">Totale finding</div>
+    </div>
+  </div>
+
+  <!-- Executive Summary -->
+  <div class="section">
+    <div class="section-label">Sintesi esecutiva</div>
+    <div class="executive">
+      <p contenteditable="true">Tutti e 4 gli utenti testati hanno completato il flusso di esplorazione della pagina corsi, ma nessuno ha proceduto all'iscrizione in autonomia. Il blocco principale è il modulo PDF da scaricare e compilare a mano, percepito come obsoleto e incompatibile con l'uso mobile. La distinzione tra le due formule (Giornaliero e Campus) ha generato confusione in tutti i partecipanti, che non riuscivano a scegliere senza un contatto diretto con il responsabile.</p>
+      <p contenteditable="true">Il tono delle regole per il Campus (cellulari, bevande) ha suscitato reazioni negative nei genitori, rischiando di allontanare il target primario. Manca una prova sociale convincente: nessun utente ha trovato elementi che attestino la storia o l'esperienza del circolo, aumentando la diffidenza verso l'iscrizione online.</p>
+    </div>
+  </div>
+
+  <!-- CRITICI -->
+  <div class="section">
+    <div class="section-label">Problemi per priorità</div>
+
+    <div class="priority-heading">
+      <div class="priority-dot critico"></div>
+      <div class="priority-title">Critici</div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-top">
+        <div class="finding-head">
+          <span class="badge critico">Critico</span>
+          <div class="finding-title" contenteditable="true">Modulo di iscrizione inutilizzabile da mobile</div>
+        </div>
+        <div class="finding-section-tag" contenteditable="true">Sezione: Modulo di iscrizione</div>
+      </div>
+      <div class="finding-body">
+        <div class="finding-desc" contenteditable="true">Il modulo è un PDF da scaricare, stampare, compilare a mano e reinviare. Franca ha abbandonato immediatamente al prompt di login Google. Juri avrebbe aperto il file solo su PC aziendale. Nessun utente si è aspettato questo flusso: tutti lo percepivano come un form compilabile digitalmente.</div>
+        <div class="rec-box" contenteditable="true">Sostituire il PDF con un Google Form o un form nativo che invii automaticamente i dati al responsabile. In alternativa, rendere esplicito il flusso: "Scarica, stampa e consegna" con istruzioni visive step-by-step.</div>
+        <blockquote contenteditable="true">"Io già avrei rinunciato. Ecco a questo punto che mi dice che devo accedere con la mail rinuncio." — Franca</blockquote>
+        <div class="users">
+          <span class="user-tag">Franca</span><span class="user-tag">Valentina</span><span class="user-tag">Juri</span><span class="user-tag">Luca</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-top">
+        <div class="finding-head">
+          <span class="badge critico">Critico</span>
+          <div class="finding-title" contenteditable="true">Distinzione Giornaliero vs Campus incomprensibile</div>
+        </div>
+        <div class="finding-section-tag" contenteditable="true">Sezione: Card corsi</div>
+      </div>
+      <div class="finding-body">
+        <div class="finding-desc" contenteditable="true">Tutti gli utenti hanno faticato a capire la differenza tra le due formule. "Tutti i livelli" compare su entrambe le card, creando ulteriore confusione. Luca non riusciva a scegliere quale formula fosse più indicata per un principiante assoluto. Valentina ha impiegato diversi minuti prima di capire che la differenza era il pernottamento.</div>
+        <div class="rec-box" contenteditable="true">Riscrivere le card con un claim differenziante immediato: es. "Rientri a casa ogni sera" (Giornaliero) vs "Vivi il circolo 24h" (Campus). Rimuovere "Tutti i livelli" dalla card Giornaliero se non pertinente. Aggiungere una tabella comparativa o un tooltip esplicativo.</div>
+        <blockquote contenteditable="true">"L'unica cosa che mi arriva subito è che il giornaliero costa 290 e il campus costa 400. Poi ripeto mettendoci più attenzione..." — Luca</blockquote>
+        <div class="users">
+          <span class="user-tag">Luca</span><span class="user-tag">Franca</span><span class="user-tag">Valentina</span><span class="user-tag">Juri</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-top">
+        <div class="finding-head">
+          <span class="badge critico">Critico</span>
+          <div class="finding-title" contenteditable="true">Nessun punto di contatto rapido vicino alle card</div>
+        </div>
+        <div class="finding-section-tag" contenteditable="true">Sezione: Card corsi / CTA</div>
+      </div>
+      <div class="finding-body">
+        <div class="finding-desc" contenteditable="true">Tutti gli utenti hanno dichiarato di voler contattare il circolo prima di iscriversi. Tuttavia Luca ha cercato invano un pulsante "Contattaci" vicino ai corsi, e Valentina ha trovato il numero telefonico solo scorrendo fino in fondo. Il flusso naturale atteso è: scopro il corso → ho dubbi → contatto → mi iscrivo.</div>
+        <div class="rec-box" contenteditable="true">Aggiungere un pulsante secondario "Hai dubbi? Scrivici" o "Chiamaci" immediatamente sotto le card corsi, con numero di telefono visibile. Non obbligare l'utente a scorrere fino al footer per trovare i contatti.</div>
+        <blockquote contenteditable="true">"Mi verrebbe da chiccare su un pulsante che però non c'è." — Luca</blockquote>
+        <div class="users">
+          <span class="user-tag">Luca</span><span class="user-tag">Valentina</span><span class="user-tag">Juri</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAGGIORI -->
+    <div class="priority-heading" style="margin-top:32px;">
+      <div class="priority-dot maggiore"></div>
+      <div class="priority-title">Maggiori</div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-top">
+        <div class="finding-head">
+          <span class="badge maggiore">Maggiore</span>
+          <div class="finding-title" contenteditable="true">Calendario date: posizione troppo in basso</div>
+        </div>
+        <div class="finding-section-tag" contenteditable="true">Sezione: Calendario corsi</div>
+      </div>
+      <div class="finding-body">
+        <div class="finding-desc" contenteditable="true">Sia Luca che Franca si aspettavano di vedere le date disponibili prima dei dettagli del corso e del modulo di iscrizione. La logica del genitore è: prima verifico se le date si sovrappongono ai miei impegni, poi valuto il resto.</div>
+        <div class="rec-box" contenteditable="true">Spostare il calendario o un riepilogo delle date subito sotto l'intestazione "Scegli la formula". Aggiungere un anchor link rapido "Vedi date" nelle card.</div>
+        <blockquote contenteditable="true">"La prima cosa che devo capire è se nei mesi e nei giorni che proponete io lo posso portare o meno." — Luca</blockquote>
+        <div class="users"><span class="user-tag">Luca</span><span class="user-tag">Franca</span></div>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-top">
+        <div class="finding-head">
+          <span class="badge maggiore">Maggiore</span>
+          <div class="finding-title" contenteditable="true">Tono delle regole campus alienante per i genitori</div>
+        </div>
+        <div class="finding-section-tag" contenteditable="true">Sezione: FAQ / Regolamento campus</div>
+      </div>
+      <div class="finding-body">
+        <div class="finding-desc" contenteditable="true">Le regole su cellulari e bevande sono scritte in modo perentorio ("non sarà possibile", "l'unica bevanda consentita sarà l'acqua"). Franca si è dichiarata indisposta e ha detto che avrebbe evitato il circolo. Valentina ha commentato negativamente. Entrambe avvertivano la mancanza di spiegazione del perché di tali regole.</div>
+        <div class="rec-box" contenteditable="true">Riscrivere le regole in tono collaborativo, spiegando il motivo didattico. Allineare al TOV del brand (dinamico, umano, non aggressivo). Es.: "Per mantenere la concentrazione in acqua, chiediamo ai ragazzi di lasciare il telefono all'istruttore durante le uscite. Potranno riprenderlo ogni sera dalle 19:00."</div>
+        <blockquote contenteditable="true">"Non è che mi puoi dire tu quando parlare con mia figlia? Cazzi miei." — Franca</blockquote>
+        <div class="users"><span class="user-tag">Franca</span><span class="user-tag">Valentina</span></div>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-top">
+        <div class="finding-head">
+          <span class="badge maggiore">Maggiore</span>
+          <div class="finding-title" contenteditable="true">Nessuna prova sociale o storia del circolo</div>
+        </div>
+        <div class="finding-section-tag" contenteditable="true">Sezione: Hero / About</div>
+      </div>
+      <div class="finding-body">
+        <div class="finding-desc" contenteditable="true">Juri ha esplicitamente ricercato informazioni su quanti anni il circolo organizzi corsi, quanti bambini abbiano già partecipato, e quanti istruttori siano disponibili. Senza questi elementi la fiducia rimane bassa e il genitore preferirà un circolo già conosciuto.</div>
+        <div class="rec-box" contenteditable="true">Aggiungere nella Hero un dato numerico ("Dal 1997 · 2.000+ velisti formati · 8 istruttori FIV"), foto delle edizioni passate, e/o un link al profilo Instagram con le foto dei camp precedenti.</div>
+        <blockquote contenteditable="true">"Se scopro che questo è un circolo che iniziato oggi, magari mi fido di meno rispetto a qualcuno che fa sti corsi da cinque o sei anni." — Juri</blockquote>
+        <div class="users"><span class="user-tag">Juri</span><span class="user-tag">Valentina</span></div>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-top">
+        <div class="finding-head">
+          <span class="badge maggiore">Maggiore</span>
+          <div class="finding-title" contenteditable="true">Nessuna foto della foresteria per il campus</div>
+        </div>
+        <div class="finding-section-tag" contenteditable="true">Sezione: Card Campus</div>
+      </div>
+      <div class="finding-body">
+        <div class="finding-desc" contenteditable="true">Sia Juri che Valentina hanno cercato foto degli alloggi prima di valutare l'iscrizione al campus. La decisione di mandare un figlio a dormire in un posto sconosciuto richiede elementi visivi rassicuranti che la pagina non fornisce.</div>
+        <div class="rec-box" contenteditable="true">Aggiungere almeno 2–3 foto della foresteria nella sezione Campus (casette di legno, camere, spazi comuni). Se non disponibili, includere un link all'Instagram dove i genitori possono vedere le edizioni passate.</div>
+        <blockquote contenteditable="true">"Forse cosa metterei? Una foto di dove dormiranno i ragazzi. Potrebbe essere anche un modo per attirare se è carino." — Juri</blockquote>
+        <div class="users"><span class="user-tag">Juri</span><span class="user-tag">Valentina</span></div>
+      </div>
+    </div>
+
+    <!-- MINORI -->
+    <div class="priority-heading" style="margin-top:32px;">
+      <div class="priority-dot minore"></div>
+      <div class="priority-title">Minori</div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-top">
+        <div class="finding-head">
+          <span class="badge minore">Minore</span>
+          <div class="finding-title" contenteditable="true">"Tutti i livelli" non chiarisce l'organizzazione per età/capacità</div>
+        </div>
+        <div class="finding-section-tag" contenteditable="true">Sezione: Card corsi</div>
+      </div>
+      <div class="finding-body">
+        <div class="finding-desc" contenteditable="true">Juri si è chiesto se un bambino di 10 anni principiante assoluto avrebbe fatto lezione insieme a un sedicenne esperto. L'etichetta "Tutti i livelli" è ambigua e non spiega come vengono formati i gruppi.</div>
+        <div class="rec-box" contenteditable="true">Sostituire con una breve frase: "Gruppi per età e livello, dai principianti agli avanzati", oppure aggiungere una FAQ specifica sull'organizzazione delle classi.</div>
+        <blockquote contenteditable="true">"Tutti i livelli in che senso? È aperto cioè principianti e meno?" — Juri</blockquote>
+        <div class="users"><span class="user-tag">Juri</span><span class="user-tag">Luca</span></div>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-top">
+        <div class="finding-head">
+          <span class="badge minore">Minore</span>
+          <div class="finding-title" contenteditable="true">Logo non cliccabile per tornare alla home</div>
+        </div>
+        <div class="finding-section-tag" contenteditable="true">Sezione: Navigazione / Header</div>
+      </div>
+      <div class="finding-body">
+        <div class="finding-desc" contenteditable="true">Valentina ha tentato di tornare alla home cliccando il logo, ma non ha funzionato. Comportamento atteso da tutti gli utenti web: il logo è il link alla home page.</div>
+        <div class="rec-box" contenteditable="true">Rendere il logo nell'header un link cliccabile che punta a "/". Fix tecnico immediato, bassa complessità.</div>
+        <blockquote contenteditable="true">"Dal logo non mi ci va." — Valentina</blockquote>
+        <div class="users"><span class="user-tag">Valentina</span></div>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-top">
+        <div class="finding-head">
+          <span class="badge minore">Minore</span>
+          <div class="finding-title" contenteditable="true">Cookie banner assente all'ingresso</div>
+        </div>
+        <div class="finding-section-tag" contenteditable="true">Sezione: Tecnico / Compliance GDPR</div>
+      </div>
+      <div class="finding-body">
+        <div class="finding-desc" contenteditable="true">Valentina ha notato che al primo accesso non è comparso nessun banner per l'accettazione dei cookie, violazione della normativa GDPR italiana.</div>
+        <div class="rec-box" contenteditable="true">Implementare un cookie banner conforme (es. Cookiebot o iubenda) che appaia al primo accesso. Fix tecnico prioritario anche per ragioni legali.</div>
+        <blockquote contenteditable="true">"Quando sono entrata non m'è comparso un messaggio se volevo accettare i cookie o no. Questo è un suo problema tecnico, non il mio." — Valentina</blockquote>
+        <div class="users"><span class="user-tag">Valentina</span></div>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="finding-top">
+        <div class="finding-head">
+          <span class="badge minore">Minore</span>
+          <div class="finding-title" contenteditable="true">Consensi nel modulo privacy non differenziati (obbligatori vs facoltativi)</div>
+        </div>
+        <div class="finding-section-tag" contenteditable="true">Sezione: Modulo iscrizione / Privacy</div>
+      </div>
+      <div class="finding-body">
+        <div class="finding-desc" contenteditable="true">Franca, esperta in materia GDPR, ha rilevato che i consensi nel modulo non distinguono tra consensi obbligatori (trattamento dati per esecuzione contratto) e facoltativi (diffusione, fini promozionali). Questo espone il circolo a rischi legali.</div>
+        <div class="rec-box" contenteditable="true">Fare verificare il modulo da un consulente legale o DPO. Distinguere chiaramente le voci obbligatorie da quelle facoltative. Segnalare urgentemente a Daniele.</div>
+        <blockquote contenteditable="true">"Occhio ai consensi obbligatori. Quella parte lì è obbligatoria, cioè te lo devo dar per forza." — Franca</blockquote>
+        <div class="users"><span class="user-tag">Franca</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function saveHTML() {
+  const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+  const blob = new Blob([html], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'usability_report_CVB_maggio2026.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function copyLink() {
+  navigator.clipboard.writeText(window.location.href).then(() => {
+    const btn = event.target;
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copiato';
+    setTimeout(() => btn.textContent = orig, 1800);
+  });
+}
+</script>
+</body>
+</html>
